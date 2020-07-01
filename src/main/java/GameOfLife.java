@@ -1,91 +1,67 @@
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Random;
+
 public class GameOfLife {
 
-    public void GameOfLife(){
+    LinkedList<String> cells = new LinkedList<>();
+    int count = 109;
+    Random random = new Random();
 
-        int x = 10, y = 10;
-
-//        i am creating a grid for my element.
-        int Grid[][] = {
-            {0,0,0,0,0,0,0,0,0,0},
-            {1,0,1,0,0,0,0,0,0,0},
-            {0,0,0,0,0,1,1,1,0,0},
-            {0,0,0,1,1,0,1,0,1,1},
-            {0,0,0,1,0,0,0,0,0,1},
-            {1,1,1,1,1,0,0,0,1,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,1,1,1,1,1},
-            {1,0,1,0,1,0,1,0,1,0},
-            {0,1,0,0,1,0,1,0,1,0}
-        };
-
-        // condition to display the grid.
-        for (int i = 0; i < x ; i++)
-        {
-            for (int j = 0; j < y ; j++)
-            {
-                if (Grid[i][j] == 0)
-                    System.out.print("0");
-                else
-                    System.out.print("1");
+    void randomCells() {
+        for (int i = 0; i < count; ++i) {
+            if (i == 10 || i == 21 || i == 32 || i == 43 || i == 54 || i == 65 || i == 76 || i == 87 || i == 98 || i == 109) {
+                cells.add("\n");
+            } else {
+                cells.add("0");
             }
-            System.out.println();
         }
-        System.out.println();
+        for (int i = 0; i < 50; ++i) {
+            int randomIndex = random.nextInt(109);
+            if (randomIndex == 10 || randomIndex == 21 || randomIndex == 32 || randomIndex == 43 || randomIndex == 54 || randomIndex == 65 || randomIndex == 76 || randomIndex == 87 || randomIndex == 98 || randomIndex == 109) {
+                cells.add("\n");
+            } else {
+                cells.set(randomIndex, "1");
+            }
+        }
     }
 
-    // public function for the nextGeneration.
-    public static void nextGeneration( int x, int y, int grid[][]){
+    boolean validateLife(int index) {
+        int life = 0, death = 0;
+        String alive = "1";
+        boolean outcome;
+        int[] otterIndex = {index - 1, index + 10, index + 11, index + 12, index + 1, index - 10, index - 11, index - 12};
+        for (int value : otterIndex) {
+            if (value > 0 && value < 109 && cells.get(value).equals(alive)) {
+                ++life;
+                ++death;
+            }
+        }
+        if (life == 2 || life == 3 || death == 3) {
+            outcome = true;
+        } else {
+            outcome = false;
+        }
+        return outcome;
+    }
 
-
-        int aliveNeighbours = 0;
-        int [][]futureGeneration = new int[x][y];
-
-        // Looping though every cell in the grid
-        for (int n = 0; n < x - 1 ; n++) {
-
-            for (int m = 0; m < y - 1 ; m++) {
-                // making sure we find alive neighbours.
-
-                for (int i = -1; i <= 1 ; i++) {
-                    for (int j = -1; j <= 1 ; j++) {
-                        aliveNeighbours += grid[n + i][m + j];
-                        aliveNeighbours -= grid[n][m];
-                    }
-                    /* Rules of Conway are implemented.
-                    cell is alone so it dies.*/
-                    if ((grid[n][m] == 1) && (aliveNeighbours < 2)){
-                        futureGeneration[n][m] = 0;
-                    }
-//                    cell dies due to over population.
-                    else if ((grid[n][m] == 1) && (aliveNeighbours > 3)){
-                        futureGeneration[n][m] = 0;
-                    }
-//                    cell is resurrect.
-                    else if ((grid[n][m] == 0) && (aliveNeighbours == 3)){
-                        futureGeneration[n][m] = 1;
-                    }
-                    else
-                    {
-                        futureGeneration[n][m] = futureGeneration[n][m];
-                    }
-
+    void nextGeneration() {
+        String alive = "1", dead = "0";
+        for (int i = 0; i < count; ++i) {
+            if (cells.get(i).equals(alive)) {
+                if (!validateLife(i)) {
+                    cells.set(i, dead);
+                }
+            } else if (cells.get(i).equals(dead)) {
+                if (validateLife(i)) {
+                    cells.set(i, alive);
                 }
             }
-
         }
-        // Displaying The next Generation.
-        System.out.println("The Next Generation");
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                if (futureGeneration[x][y] == 0){
-                    System.out.println("0");
-                }
-                else {
-                    System.out.println("1");
-                }
-            }
-            System.out.println();
-        }
+    }
+    void print() {
+        for (int i = 0; i < count; ++i)
+            System.out.print(cells.get(i));
+        System.out.println("\n");
+        System.out.println("*************************");
     }
 }
